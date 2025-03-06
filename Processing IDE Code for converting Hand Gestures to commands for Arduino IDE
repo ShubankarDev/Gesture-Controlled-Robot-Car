@@ -1,0 +1,76 @@
+//Code in Processing IDE that converts actual hand gestures captured from camera to letters 'F' 'B' 'L' 'R' 'S' to control the robot car through arduino ide.
+
+import processing.serial.*;
+import gab.opencv.*;
+import java.awt.*;
+import java.util.*;
+import mediapipe.*;  // Import MediaPipe Hand Tracking
+
+Serial myPort;
+OpenCV opencv;
+PImage img;
+HandTracking tracker;  // MediaPipe Hand Tracking
+int centerX, centerY;
+
+void setup() {
+  size(640, 480);
+  opencv = new OpenCV(this, 640, 480);
+  opencv.start();
+  
+  tracker = new HandTracking(this);  // Initialize hand tracking
+  tracker.start();
+  
+  myPort = new Serial(this, "COM3", 9600);  // Change COM port if needed
+}
+
+void draw() {
+  img = opencv.getSnap();
+  image(img, 0, 0);
+  
+  tracker.update();  // Update hand tracking
+  int gesture = detectGesture();  // Function to detect hand gestures
+
+  if (gesture == 1) { 
+    myPort.write('F');  // Move Forward
+  } 
+  else if (gesture == 2) {
+    myPort.write('B');  // Move Backward
+  }
+  else if (gesture == 3) {
+    myPort.write('L');  // Turn Left
+  }
+  else if (gesture == 4) {
+    myPort.write('R');  // Turn Right
+  }
+  else {
+    myPort.write('S');  // Stop
+  }
+}
+
+// Gesture Detection Function
+int detectGesture() {
+  if (tracker.hands.size() > 0) {
+    Hand hand = tracker.hands.get(0);  // Get the first detected hand
+    
+    // Get key landmark positions
+    PVector wrist = hand.getLandmark(0);  // Wrist
+    PVector indexTip = hand.getLandmark(8);  // Index Finger Tip
+    PVector middleTip = hand.getLandmark(12);  // Middle Finger Tip
+    PVector thumbTip = hand.getLandmark(4);  // Thumb Tip
+    
+    // Classify gestures
+    if (indexTip.y < wrist.y && middleTip.y < wrist.y) {
+      return 1;  // Forward (Both fingers up)
+    }
+    else if (indexTip.y > wrist.y && middleTip.y > wrist.y) {
+      return 2;  // Backward (Both fingers down)
+    }
+    else if (indexTip.x < wrist.x) {
+      return 3;  // Left (Index finger left)
+    }
+    else if (indexTip.x > wrist.x) {
+      return 4;  // Right (Index finger right)
+    }
+  }
+  return 0;  // No valid gesture → Stop
+}
