@@ -1,0 +1,51 @@
+//Arduino IDE code for controlling the robot car using commands 'F' 'B' 'L' 'R' 'S'.. these commands are given to arduino IDE via a serial link from Processing IDE which converts hand gestures captured in camera to letters that are passed to arduino board.
+
+int motor1A = 5;
+int motor1B = 6;
+int motor2A = 9;
+int motor2B = 10;
+
+void setup() {
+    pinMode(motor1A, OUTPUT);
+    pinMode(motor1B, OUTPUT);
+    pinMode(motor2A, OUTPUT);
+    pinMode(motor2B, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    if (Serial.available()) {
+        char command = Serial.read();
+        
+        if (command == 'F') {  // Forward
+            digitalWrite(motor1A, HIGH);
+            digitalWrite(motor1B, LOW);
+            digitalWrite(motor2A, HIGH);
+            digitalWrite(motor2B, LOW);
+        } 
+        else if (command == 'B') {  // Backward
+            digitalWrite(motor1A, LOW);
+            digitalWrite(motor1B, HIGH);
+            digitalWrite(motor2A, LOW);
+            digitalWrite(motor2B, HIGH);
+        }
+        else if (command == 'L') {  // Left
+            digitalWrite(motor1A, LOW);
+            digitalWrite(motor1B, HIGH);
+            digitalWrite(motor2A, HIGH);
+            digitalWrite(motor2B, LOW);
+        }
+        else if (command == 'R') {  // Right
+            digitalWrite(motor1A, HIGH);
+            digitalWrite(motor1B, LOW);
+            digitalWrite(motor2A, LOW);
+            digitalWrite(motor2B, HIGH);
+        }
+        else if (command == 'S') {  // Stop
+            digitalWrite(motor1A, LOW);
+            digitalWrite(motor1B, LOW);
+            digitalWrite(motor2A, LOW);
+            digitalWrite(motor2B, LOW);
+        }
+    }
+}
