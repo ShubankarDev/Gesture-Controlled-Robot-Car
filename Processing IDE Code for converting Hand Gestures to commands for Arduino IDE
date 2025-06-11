@@ -52,13 +52,13 @@ int detectGesture() {
   if (tracker.hands.size() > 0) {
     Hand hand = tracker.hands.get(0);  // Get the first detected hand
     
-    // Get key landmark positions
+    // Key landmark positions
     PVector wrist = hand.getLandmark(0);  // Wrist
     PVector indexTip = hand.getLandmark(8);  // Index Finger Tip
     PVector middleTip = hand.getLandmark(12);  // Middle Finger Tip
     PVector thumbTip = hand.getLandmark(4);  // Thumb Tip
     
-    // Classify gestures
+    // Gestures
     if (indexTip.y < wrist.y && middleTip.y < wrist.y) {
       return 1;  // Forward (Both fingers up)
     }
